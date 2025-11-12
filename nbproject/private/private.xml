@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/web/admin.jsp</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/web/index.jsp</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/Controller/QuanLySanPhamServlet.java</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/web/giohang.jsp</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/web/ShopDetails.jsp</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/Controller/DangKyServlet.java</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/Controller/TrangChuServlet.java</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/Controller/DangNhapServlet.java</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/web/js/admin.js</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/web/css/custom.css</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/web/index.html</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/web/login.jsp</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/Controller/CheckoutServlet.java</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/web/header.jsp</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/web/checkout.jsp</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/web/dangky.jsp</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/web/edit_product.jsp</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/web/footer.jsp</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/web/order_detail.jsp</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/web/order_success.jsp</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/web/shop.jsp</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/web/contact.jsp</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/Controller/ContactServlet.java</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/Controller/ShopDetailsServlet.java</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/Controller/ShopServlet.java</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/Controller/GioHangServlet.java</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/DAO/LienHeDAO.java</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/DAO/TaiKhoanDAO.java</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/model/TaiKhoan.java</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/model/DanhMuc.java</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/DAO/SanPhamDAO.java</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/web/css/style.css</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/Controller/ThemGioHangServlet.java</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/.git/config</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/web/img/footer-logo.png</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/web/img/loafer_da_lon.jpg</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/web/img/khan_cashmere.jpg</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/web/img/boots_chukka.jpg</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/web/img/blazer_lua_navy.jpg</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/DAO/GioHangDAO.java</file>
+        </group>
+    </open-files>
+</project-private>
