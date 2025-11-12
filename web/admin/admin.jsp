@@ -71,7 +71,7 @@
                 <h1>Tổng quan</h1>
                 <div>
                     <span>Chào, <strong>${sessionScope.user.hoTen}</strong>!</span>
-                    <a href="DangXuatServlet" class="btn btn-outline-danger" style="margin-left: 15px;">Đăng xuất</a>
+                    <a href="<c:url value='/DangXuatServlet'/>" class="btn btn-outline-danger" style="margin-left: 15px;">Đăng xuất</a>
                 </div>
             </div>
 

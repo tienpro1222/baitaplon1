@@ -37,18 +37,18 @@
                 <i class="fa fa-id-badge"></i> Quản lý Nhân viên
             </a>
         </li>
-        </li>
         <li class="nav-item">
             <a class="nav-link ${currentPage == 'admin/admin_suppliers.jsp' || currentPage == 'QuanLyNhaCungCapServlet' ? 'active' : ''}" 
                href="<c:url value='/QuanLyNhaCungCapServlet'/>">
                 <i class="fa fa-industry"></i> Quản lý NCC
             </a>
         </li>
-        
-        <li class="nav-item mt-3">
-             <a class="nav-link" href="<c:url value='/TrangChuServlet'/>" style="color: #adb5bd;">
-                <i class="fa fa-home"></i> Quay về Trang chủ
-            </a>
-        </li>
+<li class="nav-item">
+    <a class="nav-link ${currentPage == 'QuanLyKhoServlet' || currentPage == 'admin/admin_stock.jsp' ? 'active' : ''}" 
+       href="<c:url value='/QuanLyKhoServlet'/>">
+        <i class="fa fa-dropbox"></i> Quản Lý Kho
+    </a>
+</li>
+
     </ul>
 </div>

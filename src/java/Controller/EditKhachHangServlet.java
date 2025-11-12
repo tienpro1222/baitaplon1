@@ -18,8 +18,8 @@ public class EditKhachHangServlet extends HttpServlet {
             throws ServletException, IOException {
         String maKH = request.getParameter("maKH");
         TaiKhoanDAO tkDAO = new TaiKhoanDAO();
-        // Dùng hàm getKhachHangByMaKH mới (hoặc hàm getTaiKhoanByMaKH của bạn)
-        TaiKhoan kh = tkDAO.getTaiKhoanByMaKH(maKH); 
+        
+        TaiKhoan kh = tkDAO.getKhachHangByMaKH(maKH); 
         
         if (kh != null) {
             request.setAttribute("kh", kh);
@@ -35,10 +35,11 @@ public class EditKhachHangServlet extends HttpServlet {
             throws ServletException, IOException {
         
         // Lấy dữ liệu từ form
+        request.setCharacterEncoding("UTF-8"); 
         String maKH = request.getParameter("maKH");
         String hoTen = request.getParameter("hoTen");
         String email = request.getParameter("email");
-        String dienThoai = request.getParameter("dienThoai"); // <-- Sửa tên
+        String dienThoai = request.getParameter("dienThoai"); 
         String diaChi = request.getParameter("diaChi");
 
         // Tạo đối tượng TaiKhoan
@@ -46,12 +47,14 @@ public class EditKhachHangServlet extends HttpServlet {
         kh.setMaKH(maKH);
         kh.setHoTen(hoTen);
         kh.setEmail(email);
-        kh.setDienThoai(dienThoai); // <-- Sửa tên hàm
+        kh.setDienThoai(dienThoai); 
         kh.setDiaChi(diaChi);
 
         // Gọi DAO để cập nhật
         TaiKhoanDAO tkDAO = new TaiKhoanDAO();
-        tkDAO.updateTaiKhoan(kh); // <-- Sửa tên hàm
+        
+        // Sửa: Gọi hàm mới updateKhachHang
+        tkDAO.updateKhachHang(kh); 
 
         // Quay về trang danh sách
         response.sendRedirect("QuanLyKhachHangServlet");

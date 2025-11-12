@@ -507,54 +507,6 @@ public class SanPhamDAO {
         }
         return null;
     }
-
-    public void addDanhMuc(DanhMuc dm) {
-        String sql = "INSERT INTO danhmuc (TenDM, MoTa, Hinh) VALUES (?, ?, ?)";
-        try {
-            con = new DBConnect().getConnection();
-            ps = con.prepareStatement(sql);
-            ps.setString(1, dm.getTenDM());
-            ps.setString(2, dm.getMoTa());
-            ps.setString(3, dm.getHinhAnh()); // SỬA: Gọi đúng getHinhAnh()
-            ps.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            closeConnections();
-        }
-    }
-
-    public void updateDanhMuc(DanhMuc dm) {
-        String sql = "UPDATE danhmuc SET TenDM = ?, MoTa = ?, Hinh = ? WHERE MaDM = ?";
-        try {
-            con = new DBConnect().getConnection();
-            ps = con.prepareStatement(sql);
-            ps.setString(1, dm.getTenDM());
-            ps.setString(2, dm.getMoTa());
-            ps.setString(3, dm.getHinhAnh()); // SỬA: Gọi đúng getHinhAnh()
-            ps.setInt(4, dm.getMaDM());
-            ps.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            closeConnections();
-        }
-    }
-
-    public void deleteDanhMuc(int maDM) {
-        String sql = "DELETE FROM danhmuc WHERE MaDM = ?";
-        try {
-            con = new DBConnect().getConnection();
-            ps = con.prepareStatement(sql);
-            ps.setInt(1, maDM);
-            ps.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            closeConnections();
-        }
-    }
-
     public List<NhaCungCap> getAllNhaCungCap() {
         List<NhaCungCap> list = new ArrayList<>();
         String sql = "SELECT * FROM nhacc";
@@ -677,7 +629,83 @@ public class SanPhamDAO {
             closeConnections();
         }
     }
+// BÊN TRONG CLASS DAO/SanPhamDAO.java
 
+    /**
+     * MỚI: Đếm tổng số lượng chi tiết sản phẩm (cho phân trang)
+     */
+    public int getTongSoChiTietSP() {
+        String sql = "SELECT COUNT(*) FROM chitietsp";
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            con = new DBConnect().getConnection();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1); // Trả về tổng số
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // Tự gọi hàm closeConnections của bạn
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+                if (con != null) con.close();
+            } catch (Exception e) {}
+        }
+        return 0;
+    }
+    /**
+     * MỚI: Lấy danh sách tồn kho CÓ PHÂN TRANG (thay cho hàm cũ)
+     */
+    public List<SanPhamSize> getDanhSachTonKhoTheoTrang(int pageNumber, int pageSize) {
+        List<SanPhamSize> list = new ArrayList<>();
+        
+        // Tính toán OFFSET (vị trí bắt đầu lấy)
+        int offset = (pageNumber - 1) * pageSize;
+        
+        String sql = "SELECT ct.MaCTSP, sp.TenSP, kc.TenKichCo, ct.SoLuongTon " +
+                     "FROM chitietsp ct " +
+                     "JOIN sanpham sp ON ct.MaSP = sp.MaSP " +
+                     "JOIN kichco kc ON ct.MaKC = kc.MaKC " +
+                     "ORDER BY sp.TenSP, ct.MaCTSP " +
+                     "LIMIT ? OFFSET ?"; // Thêm LIMIT và OFFSET
+        
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            con = new DBConnect().getConnection();
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, pageSize); // LIMIT
+            ps.setInt(2, offset);   // OFFSET
+            
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                SanPhamSize sps = new SanPhamSize();
+                sps.setMaCTSP(rs.getInt("MaCTSP"));
+                sps.setTenSP(rs.getString("TenSP")); // Đã sửa model ở lần trước
+                sps.setTenKichCo(rs.getString("TenKichCo"));
+                sps.setSoLuongTon(rs.getInt("SoLuongTon"));
+                list.add(sps);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // Tự gọi hàm closeConnections của bạn
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+                if (con != null) con.close();
+            } catch (Exception e) {}
+        }
+        return list;
+    }
     public void deleteNhaCungCap(String maNCC) {
         String sql = "DELETE FROM nhacc WHERE MaNCC = ?";
         try {
@@ -689,6 +717,35 @@ public class SanPhamDAO {
             e.printStackTrace();
         } finally {
             closeConnections();
+        }
+    }
+    public boolean updateSoLuongTon(int maCTSP, int soLuongMoi) {
+        // Câu lệnh SQL update trực tiếp vào bảng chitietsp
+        String sql = "UPDATE chitietsp SET SoLuongTon = ? WHERE MaCTSP = ?";
+        
+        Connection con = null;
+        PreparedStatement ps = null;
+
+        try {
+            con = new DBConnect().getConnection();
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, soLuongMoi);
+            ps.setInt(2, maCTSP);
+            
+            // Trả về true nếu có ít nhất 1 dòng bị ảnh hưởng (tức là update thành công)
+            return ps.executeUpdate() > 0; 
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            // Tự gọi hàm closeConnections của bạn (hoặc đóng thủ công)
+            try {
+                if (ps != null) ps.close();
+                if (con != null) con.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

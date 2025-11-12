@@ -231,8 +231,9 @@ public class TaiKhoanDAO {
         }
         return 0;
     }
-public TaiKhoan getTaiKhoanByMaKH(String maKH) {
-    String sql = "SELECT * FROM taikhoan WHERE MaKH = ?";
+public TaiKhoan getKhachHangByMaKH(String maKH) {
+    // Sửa: Dùng bảng "khachhang"
+    String sql = "SELECT * FROM khachhang WHERE MaKH = ?";
     Connection con = null;
     PreparedStatement ps = null;
     ResultSet rs = null;
@@ -248,11 +249,13 @@ public TaiKhoan getTaiKhoanByMaKH(String maKH) {
             tk.setMaKH(rs.getString("MaKH"));
             tk.setHoTen(rs.getString("HoTen"));
             tk.setEmail(rs.getString("Email"));
-            tk.setDienThoai(rs.getString("SDT"));
+            tk.setDienThoai(rs.getString("DienThoai")); // Sửa: Cột "DienThoai"
             tk.setDiaChi(rs.getString("DiaChi"));
-            tk.setRole(rs.getInt("Role"));
-            tk.setHieuLuc(rs.getBoolean("HieuLuc"));
-            // Không lấy mật khẩu để bảo mật
+            tk.setRole(rs.getInt("VaiTro"));       // Sửa: Cột "VaiTro"
+            tk.setHieuLuc(rs.getBoolean("HieuLuc"));   // Sửa: Dùng getBoolean
+            
+            // Bạn có thể cần set cả MatKhau nếu model của bạn yêu cầu
+            tk.setPassword(rs.getString("MatKhau")); 
             return tk;
         }
     } catch (Exception e) {
@@ -267,11 +270,12 @@ public TaiKhoan getTaiKhoanByMaKH(String maKH) {
 }
 
 /**
- * MỚI: Cập nhật thông tin tài khoản (dùng cho trang Sửa)
+ * MỚI: Cập nhật thông tin khách hàng (dùng cho trang Sửa)
+ * (Phiên bản đã sửa đúng tên bảng và tên cột)
  */
-public boolean updateTaiKhoan(TaiKhoan kh) {
-    // Không cập nhật mật khẩu, MaKH, Role ở đây
-    String sql = "UPDATE taikhoan SET HoTen = ?, Email = ?, SDT = ?, DiaChi = ? WHERE MaKH = ?";
+public boolean updateKhachHang(TaiKhoan kh) {
+    // Sửa: Dùng bảng "khachhang" và cột "DienThoai"
+    String sql = "UPDATE khachhang SET HoTen = ?, Email = ?, DienThoai = ?, DiaChi = ? WHERE MaKH = ?";
     Connection con = null;
     PreparedStatement ps = null;
     
@@ -280,7 +284,7 @@ public boolean updateTaiKhoan(TaiKhoan kh) {
         ps = con.prepareStatement(sql);
         ps.setString(1, kh.getHoTen());
         ps.setString(2, kh.getEmail());
-        ps.setString(3, kh.getDienThoai());
+        ps.setString(3, kh.getDienThoai()); // Sửa: getDienThoai
         ps.setString(4, kh.getDiaChi());
         ps.setString(5, kh.getMaKH());
         
@@ -294,7 +298,7 @@ public boolean updateTaiKhoan(TaiKhoan kh) {
         try { if (con != null) con.close(); } catch (Exception e) {}
     }
 }
-    /**
+  /**
      * MỚI: Lấy tổng số đơn hàng đã bán (cho Stat Card)
      */
     public int getTongSoDonHang() {

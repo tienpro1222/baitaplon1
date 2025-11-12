@@ -6,6 +6,15 @@ public class SanPhamSize {
     private String TenKichCo; 
     private int SoLuongTon; 
     private double GiaBan; 
+    private String TenSP;
+
+    public String getTenSP() {
+        return TenSP;
+    }
+
+    public void setTenSP(String TenSP) {
+        this.TenSP = TenSP;
+    }
     public SanPhamSize() {
     }
 

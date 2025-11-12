@@ -87,22 +87,30 @@
                         <h2>Đăng ký</h2>
                         
                         <form action="DangKyServlet" method="post">
-                            <div class="form-group input-group-icon mb-3">
-                                <span class="input-icon"><i class="fa fa-user"></i></span>
-                                <input type="text" class="form-control" placeholder="Họ và tên" id="hoten" name="hoten" required>
-                            </div>
-                            <div class="form-group input-group-icon mb-3">
-                                <span class="input-icon"><i class="fa fa-envelope"></i></span>
-                                <input type="email" class="form-control" placeholder="Email" id="email" name="email" required>
-                            </div>
-                            <div class="form-group input-group-icon mb-3">
-                                <span class="input-icon"><i class="fa fa-lock"></i></span>
-                                <input type="password" class="form-control" placeholder="Mật khẩu" id="pass" name="pass" required>
-                            </div>
-                            <div class="form-group input-group-icon mb-3">
-                                <span class="input-icon"><i class="fa fa-lock"></i></span>
-                                <input type="password" class="form-control" placeholder="Nhập lại Mật khẩu" id="repass" name="repass" required>
-                            </div>
+<div class="form-group input-group-icon mb-3">
+    <span class="input-icon"><i class="fa fa-user"></i></span>
+    <input type="text" class="form-control" placeholder="Họ và tên" id="hoten" name="hoten" required>
+</div>
+<div class="form-group input-group-icon mb-3">
+    <span class="input-icon"><i class="fa fa-envelope"></i></span>
+    <input type="email" class="form-control" placeholder="Email" id="email" name="email" required>
+</div>
+<div class="form-group input-group-icon mb-3">
+    <span class="input-icon"><i class="fa fa-phone"></i></span>
+    <input type="text" class="form-control" placeholder="Số điện thoại" id="dienThoai" name="dienThoai">
+</div>
+<div class="form-group input-group-icon mb-3">
+    <span class="input-icon"><i class="fa fa-map-marker"></i></span>
+    <input type="text" class="form-control" placeholder="Địa chỉ" id="diaChi" name="diaChi">
+</div>
+<div class="form-group input-group-icon mb-3">
+    <span class="input-icon"><i class="fa fa-lock"></i></span>
+    <input type="password" class="form-control" placeholder="Mật khẩu" id="pass" name="pass" required>
+</div>
+<div class="form-group input-group-icon mb-3">
+    <span class="input-icon"><i class="fa fa-lock"></i></span>
+    <input type="password" class="form-control" placeholder="Nhập lại Mật khẩu" id="repass" name="repass" required>
+</div>
                             
                             <c:if test="${requestScope.error != null}">
                                 <p style="color: red; margin-top: 10px;">${requestScope.error}</p>

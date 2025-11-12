@@ -43,12 +43,7 @@
             </div>
             
             <div class="admin-container">
-                
-                <c:if test="${not empty errorMessage}">
-                    <div class="alert alert-danger" role="alert">
-                        ${errorMessage}
-                    </div>
-                </c:if>
+              
 
                 <div class="card">
                     <div class="card-header">

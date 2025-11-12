@@ -114,17 +114,20 @@
                             <ul class="checkout__total__all">
                                 <li>Tổng cộng <span><fmt:formatNumber type="number" value="${tongTien}" /> VNĐ</span></li>
                             </ul>
-
-                            <div class="checkout__input__checkbox">
-                                <label>
-                                    <input type="radio" name="paymentMethod" value="COD" checked> Thanh toán khi nhận hàng (COD)
-                                </label>
-                            </div>
-                            <div class="checkout__input__checkbox">
-                                <label>
-                                    <input type="radio" name="paymentMethod" value="Transfer"> Chuyển khoản Ngân hàng
-                                </label>
-                            </div>
+<div class="checkout__input__checkbox">
+    <label>
+        <input type="radio" name="paymentMethod" value="COD" checked> 
+        Thanh toán khi nhận hàng (COD)
+        <span class="checkmark"></span>
+    </label>
+</div>
+<div class="checkout__input__checkbox">
+    <label>
+        <input type="radio" name="paymentMethod" value="Transfer"> 
+        Chuyển khoản Ngân hàng
+        <span class="checkmark"></span>
+    </label>
+</div>
 
                             <button type="submit" class="site-btn">ĐẶT HÀNG</button>
                         </div>
@@ -138,6 +141,6 @@
 <jsp:include page="footer.jsp" />
 
 <script src="<c:url value='/js/jquery-3.3.1.min.js'/>"></script>
-<script src="<c:url value='/js/bootstrap.bundle.min.js'/>"></script>
+<script src="<c:url value='/js/bootstrap.min.js'/>"></script>
 </body>
 </html>
