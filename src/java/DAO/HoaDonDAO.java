@@ -261,7 +261,7 @@ public int createHoaDon(HoaDon hd, List<GioHang> cartItems) {
                      "JOIN " +
                      "    chitiethd ct ON hd.MaHD = ct.MaHD " +
                      "WHERE " +
-                     "    hd.MaTrangThai = 3  " +
+                     "    hd.MaTrangThai IN(1,3)  " +
                      "    AND hd.NgayDat >= CURDATE() - INTERVAL 7 DAY " +
                      "GROUP BY " +
                      "    DATE(hd.NgayDat) " +
@@ -346,4 +346,64 @@ public int createHoaDon(HoaDon hd, List<GioHang> cartItems) {
         }
         return list;
     }
+    /**
+     * MỚI: Lấy tổng doanh thu (chỉ tính các đơn đã hoàn thành)
+     */
+    public double getTongDoanhThu() {
+        // Câu SQL này SUM tiền từ bảng chi tiết,
+        // và chỉ tính các hóa đơn có trạng thái 1 hoặc 3 (giống logic thống kê 7 ngày)
+        String sql = "SELECT SUM(ct.DonGia * ct.SoLuong) " +
+                     "FROM chitiethd ct " +
+                     "JOIN hoadon hd ON ct.MaHD = hd.MaHD " +
+                     "WHERE hd.MaTrangThai IN (1, 3)"; 
+        
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        double tongDoanhThu = 0.0; // Mặc định là 0
+
+        try {
+            con = new DBConnect().getConnection();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            // Truy vấn SUM luôn trả về 1 hàng, kể cả là 0 hoặc NULL
+            if (rs.next()) {
+                tongDoanhThu = rs.getDouble(1); // Lấy kết quả từ cột đầu tiên
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeConnections(con, ps, rs); // Dùng lại hàm helper
+        }
+        return tongDoanhThu;
+    }
+
+    /**
+     * MỚI: Lấy tổng số đơn hàng (tất cả trạng thái)
+     */
+    public int getTongSoDonHang() {
+        String sql = "SELECT COUNT(*) FROM hoadon"; // Đếm tất cả hóa đơn
+        
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        int tongSoDonHang = 0; // Mặc định là 0
+
+        try {
+            con = new DBConnect().getConnection();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                tongSoDonHang = rs.getInt(1); // Lấy kết quả từ cột đầu tiên
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeConnections(con, ps, rs); // Dùng lại hàm helper
+        }
+        return tongSoDonHang;
+    }
+    
 }

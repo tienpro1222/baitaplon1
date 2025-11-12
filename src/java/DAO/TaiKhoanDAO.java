@@ -236,6 +236,67 @@ public class TaiKhoanDAO {
         }
         return list;
     }
+    /**
+     * MỚI: Lấy tổng doanh thu (cho Stat Card)
+     */
+    public double getTongDoanhThu() {
+        // Lấy doanh thu của đơn (1) Đã thanh toán và (3) Đã giao hàng
+        String sql = "SELECT SUM(ct.DonGia * ct.SoLuong) " +
+                     "FROM chitiethd ct JOIN hoadon hd ON ct.MaHD = hd.MaHD " +
+                     "WHERE hd.MaTrangThai IN (1, 3)";
+        try {
+            conn = new DBConnect().getConnection();
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeConnections();
+        }
+        return 0;
+    }
+
+    /**
+     * MỚI: Lấy tổng số đơn hàng đã bán (cho Stat Card)
+     */
+    public int getTongSoDonHang() {
+        String sql = "SELECT COUNT(*) FROM hoadon WHERE MaTrangThai IN (1, 3)";
+        try {
+            conn = new DBConnect().getConnection();
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeConnections();
+        }
+        return 0;
+    }
+    /**
+     * MỚI: Lấy tổng số khách hàng (cho Stat Card)
+     */
+    public int getTongSoKhachHang() {
+        String sql = "SELECT COUNT(*) FROM khachhang WHERE VaiTro = 0";
+        try {
+            conn = new DBConnect().getConnection();
+            ps = conn.prepareStatement(sql);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeConnections();
+        }
+        return 0;
+    }
 
     /**
      * MỚI: Lấy một Nhân viên theo MaNV

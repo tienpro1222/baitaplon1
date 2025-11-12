@@ -1,57 +1,86 @@
-/* 
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/JavaScript.js to edit this template
+/* * File JS tùy chỉnh cho trang Admin
+ * PHIÊN BẢN BIỂU ĐỒ CỘT (BAR CHART)
  */
 
-
-/* JavaScript tùy chỉnh cho trang admin */
-
-(function($) {
+$(document).ready(function() {
     
-    // Bước 1: Lấy dữ liệu từ biến toàn cục (được định nghĩa trong admin.jsp)
-    // Biến 'chartLabels' và 'chartData' phải được khai báo trong admin.jsp
-    
-    // Bước 2: Vẽ biểu đồ
-    // Thêm kiểm tra nếu có dữ liệu thì mới vẽ
-    if (typeof chartData !== 'undefined' && chartData.length > 0) {
+    // Kiểm tra xem chartLabels và chartData có tồn tại không (được nhúng từ admin/admin.jsp)
+    if (typeof chartLabels !== 'undefined' && typeof chartData !== 'undefined') {
+        
         var ctx = document.getElementById('myRevenueChart').getContext('2d');
+        
+        // SỬA: Dùng một mảng màu cho 7 cột
+        // (Bạn có thể dùng 1 màu duy nhất nếu muốn, ví dụ: 'rgba(230, 57, 70, 0.7)')
+        var barColors = [
+            'rgba(255, 99, 132, 0.7)',
+            'rgba(54, 162, 235, 0.7)',
+            'rgba(255, 206, 86, 0.7)',
+            'rgba(75, 192, 192, 0.7)',
+            'rgba(153, 102, 255, 0.7)',
+            'rgba(255, 159, 64, 0.7)',
+            'rgba(230, 57, 70, 0.7)'
+        ];
+        
+        // SỬA: Tạo border đậm hơn cho các cột
+        var borderColors = barColors.map(color => color.replace('0.7', '1'));
+
         var myRevenueChart = new Chart(ctx, {
-            type: 'line', // Bạn có thể đổi thành 'bar' nếu muốn
+            type: 'bar', // SỬA: Đổi type sang 'bar'
             data: {
-                labels: chartLabels, // Sử dụng biến toàn cục
+                labels: chartLabels, 
                 datasets: [{
-                    label: 'Doanh thu (VNĐ)',
-                    data: chartData, // Sử dụng biến toàn cục
-                    backgroundColor: 'rgba(0, 123, 255, 0.2)', // Màu nền
-                    borderColor: 'rgba(0, 123, 255, 1)',     // Màu đường viền
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.1 // Làm cho đường cong mượt hơn
+                    label: 'Doanh thu',
+                    data: chartData, 
+                    backgroundColor: barColors, // SỬA: Dùng mảng màu nền
+                    borderColor: borderColors,  // SỬA: Dùng mảng màu viền
+                    borderWidth: 1,
+                    borderRadius: 5, // Bo góc nhẹ cho các cột
+                    hoverBackgroundColor: borderColors // Đậm màu hơn khi di chuột
                 }]
             },
             options: {
+                responsive: true,
+                maintainAspectRatio: false,
                 scales: {
                     y: {
                         beginAtZero: true,
-                        // Định dạng trục Y (trục tiền)
                         ticks: {
+                            // Format tiền tệ "100.000 VNĐ"
                             callback: function(value, index, values) {
-                                return new Intl.NumberFormat('vi-VN').format(value) + ' VNĐ';
+                                return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
                             }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false // Ẩn đường lưới trục X cho gọn
                         }
                     }
                 },
                 plugins: {
-                    // Định dạng khi di chuột vào (tooltip)
+                    legend: {
+                        display: false // Ẩn chú thích "Doanh thu"
+                    },
                     tooltip: {
+                        backgroundColor: '#333',
+                        titleFont: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 13
+                        },
+                        padding: 10,
+                        cornerRadius: 6,
+                        displayColors: false, // Ẩn ô vuông màu
                         callbacks: {
                             label: function(context) {
-                                let label = context.dataset.label || '';
+                                var label = context.dataset.label || '';
                                 if (label) {
                                     label += ': ';
                                 }
                                 if (context.parsed.y !== null) {
-                                    label += new Intl.NumberFormat('vi-VN').format(context.parsed.y) + ' VNĐ';
+                                    label += new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(context.parsed.y);
                                 }
                                 return label;
                             }
@@ -60,51 +89,5 @@
                 }
             }
         });
-    } else if (document.getElementById('myRevenueChart')) { 
-        // Nếu không có dữ liệu, hiển thị thông báo
-        var canvas = document.getElementById('myRevenueChart');
-        var ctx = canvas.getContext('2d');
-        ctx.font = "16px Arial";
-        ctx.fillStyle = "#888";
-        ctx.textAlign = "center";
-        ctx.fillText("Chưa có dữ liệu doanh thu (Đơn hàng 'Đã giao') trong 7 ngày qua.", canvas.width / 2, 50);
     }
-    // ===============================================
-    // MỚI: LOGIC XEM TRƯỚC ẢNH SẢN PHẨM
-    // ===============================================
-
-    // 1. Tìm các phần tử trên trang
-    var hinhAnhInput = document.getElementById('hinhAnhInput');
-    var imagePreview = document.getElementById('imagePreview');
-
-    // 2. Hàm để cập nhật ảnh
-    function updateImagePreview() {
-        // Kiểm tra xem các phần tử có tồn tại không
-        if (!hinhAnhInput || !imagePreview) return; 
-
-        var link = hinhAnhInput.value;
-        if (link) {
-            imagePreview.src = link; // Đặt nguồn ảnh
-            imagePreview.style.display = 'block'; // Hiển thị ảnh
-        } else {
-            imagePreview.style.display = 'none'; // Ẩn nếu không có link
-        }
-    }
-
-    // 3. Gán sự kiện
-    // (Kiểm tra xem hinhAnhInput có tồn tại trên trang này không)
-    if (hinhAnhInput) {
-        
-        // Chạy khi người dùng click ra khỏi ô input
-        hinhAnhInput.addEventListener('blur', updateImagePreview);
-        
-        // Chạy khi người dùng dán link vào
-        hinhAnhInput.addEventListener('paste', function() {
-            // Cần một độ trễ nhỏ để value kịp cập nhật
-            setTimeout(updateImagePreview, 100);
-        });
-        
-        // Cập nhật ngay khi tải trang (dành cho trang Sửa sản phẩm)
-        updateImagePreview();
-    }
-})(jQuery);
+});

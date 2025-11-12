@@ -76,16 +76,19 @@
                                             <td>
                                                 <c:choose>
                                                     <c:when test="${hd.maTrangThai == 1}">
-                                                        <span style="color: #f77f00;">Chờ xác nhận</span>
+                                                        <span style="color: #f77f00;">đã thanh toán</span>
                                                     </c:when>
                                                     <c:when test="${hd.maTrangThai == 2}">
-                                                        <span style="color: #007bff;">Đang giao hàng</span>
+                                                        <span style="color: #007bff;">chờ giao hàng</span>
                                                     </c:when>
                                                     <c:when test="${hd.maTrangThai == 3}">
                                                         <span style="color: #28a745;">Đã hoàn thành</span>
                                                     </c:when>
-                                                    <c:when test="${hd.maTrangThai == 4}">
+                                                    <c:when test="${hd.maTrangThai == -1}">
                                                         <span style="color: #dc3545;">Đã hủy</span>
+                                                    </c:when>
+                                                         <c:when test="${hd.maTrangThai == 0}">
+                                                        <span style="color: #dc3545;">Mới đặt hàng</span>
                                                     </c:when>
                                                     <c:otherwise>
                                                         <span>Không xác định</span>

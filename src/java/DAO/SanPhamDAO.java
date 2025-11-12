@@ -12,6 +12,7 @@ import util.DBConnect;
 import model.DanhMuc;
 import model.KichCo;
 import model.NhaCungCap;
+import model.ThongKeSanPham;
 
 public class SanPhamDAO {
 
@@ -22,32 +23,37 @@ public class SanPhamDAO {
     // --- HÀM ĐÓNG KẾT NỐI (DÙNG CHUNG) ---
     private void closeConnections() {
         try {
-            if (rs != null) rs.close();
-            if (ps != null) ps.close();
-            if (con != null) con.close();
+            if (rs != null) {
+                rs.close();
+            }
+            if (ps != null) {
+                ps.close();
+            }
+            if (con != null) {
+                con.close();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     // --- CÁC HÀM CỦA SẢN PHẨM ---
-
     public void addSanPham(SanPham sp) {
         String sql = "INSERT INTO sanpham (TenSP, MaDM, MoTaDonVi, GiaCoBan, NgaySanXuat, LuotXem, MoTa, MaNCC) "
-                   + "VALUES (?, ?, ?, ?, NOW(), 0, ?, ?)";
+                + "VALUES (?, ?, ?, ?, NOW(), 0, ?, ?)";
         try {
             con = new DBConnect().getConnection();
             ps = con.prepareStatement(sql);
-            
+
             ps.setString(1, sp.getTenSP());
             ps.setInt(2, sp.getMaDM());
-            ps.setString(3, sp.getMoTaDonVi()); 
+            ps.setString(3, sp.getMoTaDonVi());
             ps.setDouble(4, sp.getGiaCoBan());
             ps.setString(5, sp.getMoTa());
-            ps.setString(6, sp.getMaNCC()); 
-            
+            ps.setString(6, sp.getMaNCC());
+
             ps.executeUpdate();
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -57,14 +63,14 @@ public class SanPhamDAO {
 
     public List<SanPham> getNewSanPham(int topN) {
         List<SanPham> list = new ArrayList<>();
-        String sql = "SELECT sp.*, hinhsp.URLHinhAnh " +
-                     "FROM sanpham sp " +
-                     "LEFT JOIN hinhanhsanpham hinhsp ON sp.MaSP = hinhsp.MaSP AND hinhsp.IsDefault = 1 " +
-                     "ORDER BY sp.NgaySanXuat DESC LIMIT ?";
+        String sql = "SELECT sp.*, hinhsp.URLHinhAnh "
+                + "FROM sanpham sp "
+                + "LEFT JOIN hinhanhsanpham hinhsp ON sp.MaSP = hinhsp.MaSP AND hinhsp.IsDefault = 1 "
+                + "ORDER BY sp.NgaySanXuat DESC LIMIT ?";
         try {
             con = new DBConnect().getConnection();
             ps = con.prepareStatement(sql);
-            ps.setInt(1, topN); 
+            ps.setInt(1, topN);
             rs = ps.executeQuery();
             while (rs.next()) {
                 SanPham sp = new SanPham(
@@ -105,28 +111,28 @@ public class SanPhamDAO {
 
     public void updateSanPham(SanPham sp) {
         String sql = "UPDATE sanpham SET TenSP = ?, MaDM = ?, MoTaDonVi = ?, GiaCoBan = ?, MoTa = ?, MaNCC = ? "
-                   + "WHERE MaSP = ?";
+                + "WHERE MaSP = ?";
         try {
             con = new DBConnect().getConnection();
             ps = con.prepareStatement(sql);
-            
+
             ps.setString(1, sp.getTenSP());
             ps.setInt(2, sp.getMaDM());
-            ps.setString(3, sp.getMoTaDonVi()); 
+            ps.setString(3, sp.getMoTaDonVi());
             ps.setDouble(4, sp.getGiaCoBan());
             ps.setString(5, sp.getMoTa());
             ps.setString(6, sp.getMaNCC());
             ps.setInt(7, sp.getMaSP()); // Tham số cho WHERE
-            
+
             ps.executeUpdate();
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             closeConnections();
         }
     }
-    
+
     public List<KichCo> getAllKichCo() {
         List<KichCo> listKC = new ArrayList<>();
         String sql = "SELECT * FROM kichco ORDER BY MaKC";
@@ -147,13 +153,13 @@ public class SanPhamDAO {
         }
         return listKC;
     }
-    
+
     public List<SanPham> getAllSanPhamSortedByDate() {
         List<SanPham> listSP = new ArrayList<>();
-        String sql = "SELECT sp.*, hinhsp.URLHinhAnh " +
-                     "FROM sanpham sp " +
-                     "LEFT JOIN hinhanhsanpham hinhsp ON sp.MaSP = hinhsp.MaSP AND hinhsp.IsDefault = 1 " +
-                     "ORDER BY sp.NgaySanXuat DESC";
+        String sql = "SELECT sp.*, hinhsp.URLHinhAnh "
+                + "FROM sanpham sp "
+                + "LEFT JOIN hinhanhsanpham hinhsp ON sp.MaSP = hinhsp.MaSP AND hinhsp.IsDefault = 1 "
+                + "ORDER BY sp.NgaySanXuat DESC";
         try {
             con = new DBConnect().getConnection();
             ps = con.prepareStatement(sql);
@@ -170,7 +176,7 @@ public class SanPhamDAO {
                         rs.getString("MoTa"),
                         rs.getString("MaNCC")
                 );
-                sp.setHinhAnh(rs.getString("URLHinhAnh")); 
+                sp.setHinhAnh(rs.getString("URLHinhAnh"));
                 listSP.add(sp);
             }
         } catch (Exception e) {
@@ -180,11 +186,11 @@ public class SanPhamDAO {
         }
         return listSP;
     }
-    
+
     public int countSanPhamByFilter(String maDM, String keyword) {
         StringBuilder sql = new StringBuilder("SELECT count(*) FROM sanpham sp");
-        List<Object> params = new ArrayList<>(); 
-        List<String> conditions = new ArrayList<>(); 
+        List<Object> params = new ArrayList<>();
+        List<String> conditions = new ArrayList<>();
 
         if (maDM != null && !maDM.isEmpty()) {
             conditions.add("sp.MaDM = ?");
@@ -193,7 +199,7 @@ public class SanPhamDAO {
 
         if (keyword != null && !keyword.trim().isEmpty()) {
             conditions.add("sp.TenSP LIKE ?");
-            params.add("%" + keyword.trim() + "%"); 
+            params.add("%" + keyword.trim() + "%");
         }
 
         if (!conditions.isEmpty()) {
@@ -207,10 +213,10 @@ public class SanPhamDAO {
             for (int i = 0; i < params.size(); i++) {
                 ps.setObject(i + 1, params.get(i));
             }
-            
+
             rs = ps.executeQuery();
             if (rs.next()) {
-                return rs.getInt(1); 
+                return rs.getInt(1);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -222,13 +228,13 @@ public class SanPhamDAO {
 
     public List<SanPham> getSanPhamByFilter(String maDM, String keyword, String sort, int page, int pageSize) {
         List<SanPham> list = new ArrayList<>();
-        
+
         StringBuilder sql = new StringBuilder(
-            "SELECT sp.*, hinhsp.URLHinhAnh " +
-            "FROM sanpham sp " +
-            "LEFT JOIN hinhanhsanpham hinhsp ON sp.MaSP = hinhsp.MaSP AND hinhsp.IsDefault = 1"
+                "SELECT sp.*, hinhsp.URLHinhAnh "
+                + "FROM sanpham sp "
+                + "LEFT JOIN hinhanhsanpham hinhsp ON sp.MaSP = hinhsp.MaSP AND hinhsp.IsDefault = 1"
         );
-        
+
         List<Object> params = new ArrayList<>();
         List<String> conditions = new ArrayList<>();
 
@@ -255,7 +261,7 @@ public class SanPhamDAO {
                 sql.append(" ORDER BY sp.TenSP ASC");
             }
         } else {
-            sql.append(" ORDER BY sp.MaSP DESC"); 
+            sql.append(" ORDER BY sp.MaSP DESC");
         }
 
         sql.append(" LIMIT ? OFFSET ?");
@@ -269,7 +275,7 @@ public class SanPhamDAO {
             for (int i = 0; i < params.size(); i++) {
                 ps.setObject(i + 1, params.get(i));
             }
-            
+
             rs = ps.executeQuery();
             while (rs.next()) {
                 SanPham sp = new SanPham();
@@ -282,8 +288,8 @@ public class SanPhamDAO {
                 sp.setLuotXem(rs.getInt("LuotXem"));
                 sp.setMoTa(rs.getString("MoTa"));
                 sp.setMaNCC(rs.getString("MaNCC"));
-                sp.setHinhAnh(rs.getString("URLHinhAnh")); 
-                
+                sp.setHinhAnh(rs.getString("URLHinhAnh"));
+
                 list.add(sp);
             }
         } catch (Exception e) {
@@ -292,18 +298,18 @@ public class SanPhamDAO {
             closeConnections();
         }
         return list;
-    }    
-    
+    }
+
     public List<SanPham> getTopViewed(int topN) {
         List<SanPham> list = new ArrayList<>();
-        String sql = "SELECT sp.*, hinhsp.URLHinhAnh " +
-                     "FROM sanpham sp " +
-                     "LEFT JOIN hinhanhsanpham hinhsp ON sp.MaSP = hinhsp.MaSP AND hinhsp.IsDefault = 1 " +
-                     "ORDER BY sp.LuotXem DESC LIMIT ?";
+        String sql = "SELECT sp.*, hinhsp.URLHinhAnh "
+                + "FROM sanpham sp "
+                + "LEFT JOIN hinhanhsanpham hinhsp ON sp.MaSP = hinhsp.MaSP AND hinhsp.IsDefault = 1 "
+                + "ORDER BY sp.LuotXem DESC LIMIT ?";
         try {
             con = new DBConnect().getConnection();
             ps = con.prepareStatement(sql);
-            ps.setInt(1, topN); 
+            ps.setInt(1, topN);
             rs = ps.executeQuery();
             while (rs.next()) {
                 SanPham sp = new SanPham(
@@ -317,7 +323,7 @@ public class SanPhamDAO {
                         rs.getString("MoTa"),
                         rs.getString("MaNCC")
                 );
-                sp.setHinhAnh(rs.getString("URLHinhAnh")); 
+                sp.setHinhAnh(rs.getString("URLHinhAnh"));
                 list.add(sp);
             }
         } catch (Exception e) {
@@ -329,11 +335,11 @@ public class SanPhamDAO {
     }
 
     public SanPham getSanPhamByMaSP(int maSP) {
-        String sql = "SELECT sp.*, dm.TenDM, ncc.TenCty " +
-                     "FROM sanpham sp " +
-                     "JOIN danhmuc dm ON sp.MaDM = dm.MaDM " +
-                     "JOIN nhacc ncc ON sp.MaNCC = ncc.MaNCC " +
-                     "WHERE sp.MaSP = ?";
+        String sql = "SELECT sp.*, dm.TenDM, ncc.TenCty "
+                + "FROM sanpham sp "
+                + "JOIN danhmuc dm ON sp.MaDM = dm.MaDM "
+                + "JOIN nhacc ncc ON sp.MaNCC = ncc.MaNCC "
+                + "WHERE sp.MaSP = ?";
         try {
             con = new DBConnect().getConnection();
             ps = con.prepareStatement(sql);
@@ -351,7 +357,7 @@ public class SanPhamDAO {
                         rs.getString("MoTa"),
                         rs.getString("MaNCC")
                 );
-                
+
                 sp.setTenDanhMuc(rs.getString("TenDM"));
                 sp.setTenNhaCungCap(rs.getString("TenCty"));
                 return sp;
@@ -367,9 +373,9 @@ public class SanPhamDAO {
     public List<SanPhamSize> getChiTietSPByMaSP(int maSP) {
         List<SanPhamSize> listSize = new ArrayList<>();
         String sql = "SELECT ct.MaCTSP, ct.MaSP, kc.TenKichCo, ct.SoLuongTon, ct.GiaBan "
-                   + "FROM chitietsp ct "
-                   + "JOIN kichco kc ON ct.MaKC = kc.MaKC "
-                   + "WHERE ct.MaSP = ?";
+                + "FROM chitietsp ct "
+                + "JOIN kichco kc ON ct.MaKC = kc.MaKC "
+                + "WHERE ct.MaSP = ?";
         try {
             con = new DBConnect().getConnection();
             ps = con.prepareStatement(sql);
@@ -391,7 +397,7 @@ public class SanPhamDAO {
         }
         return listSize;
     }
-    
+
     public List<HinhAnhSanPham> getListHinhAnhByMaSP(int maSP) {
         List<HinhAnhSanPham> listAnh = new ArrayList<>();
         String sql = "SELECT * FROM hinhanhsanpham WHERE MaSP = ?";
@@ -415,15 +421,15 @@ public class SanPhamDAO {
         }
         return listAnh;
     }
-    
+
     public List<SanPham> getSanPhamLienQuan(int maDM, int maSP_hienTai) {
         List<SanPham> listSP = new ArrayList<>();
-        String sql = "SELECT sp.*, hinhsp.URLHinhAnh " +
-                     "FROM sanpham sp " +
-                     "LEFT JOIN hinhanhsanpham hinhsp ON sp.MaSP = hinhsp.MaSP AND hinhsp.IsDefault = 1 "
-                   + "WHERE sp.MaDM = ? AND sp.MaSP != ? "
-                   + "ORDER BY NgaySanXuat DESC " 
-                   + "LIMIT 4";
+        String sql = "SELECT sp.*, hinhsp.URLHinhAnh "
+                + "FROM sanpham sp "
+                + "LEFT JOIN hinhanhsanpham hinhsp ON sp.MaSP = hinhsp.MaSP AND hinhsp.IsDefault = 1 "
+                + "WHERE sp.MaDM = ? AND sp.MaSP != ? "
+                + "ORDER BY NgaySanXuat DESC "
+                + "LIMIT 4";
         try {
             con = new DBConnect().getConnection();
             ps = con.prepareStatement(sql);
@@ -442,7 +448,7 @@ public class SanPhamDAO {
                         rs.getString("MoTa"),
                         rs.getString("MaNCC")
                 );
-                sp.setHinhAnh(rs.getString("URLHinhAnh")); 
+                sp.setHinhAnh(rs.getString("URLHinhAnh"));
                 listSP.add(sp);
             }
         } catch (Exception e) {
@@ -452,14 +458,13 @@ public class SanPhamDAO {
         }
         return listSP;
     }
-    
-    // --- CÁC HÀM CRUD CHO DANH MỤC (ĐÃ SỬA LỖI) ---
 
+    // --- CÁC HÀM CRUD CHO DANH MỤC (ĐÃ SỬA LỖI) ---
     public List<DanhMuc> getAllDanhMuc() {
         List<DanhMuc> listDM = new ArrayList<>();
-        String sql = "SELECT * FROM danhmuc"; 
+        String sql = "SELECT * FROM danhmuc";
         try {
-            con = new DBConnect().getConnection(); 
+            con = new DBConnect().getConnection();
             ps = con.prepareStatement(sql);
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -468,7 +473,7 @@ public class SanPhamDAO {
                         rs.getInt("MaDM"),
                         rs.getString("TenDM"),
                         rs.getString("MoTa"), // CSDL có MoTa
-                        rs.getString("Hinh")  // CSDL có Hinh
+                        rs.getString("Hinh") // CSDL có Hinh
                 ));
             }
         } catch (Exception e) {
@@ -478,7 +483,7 @@ public class SanPhamDAO {
         }
         return listDM;
     }
-    
+
     public DanhMuc getDanhMucByMaDM(int maDM) {
         String sql = "SELECT * FROM danhmuc WHERE MaDM = ?";
         try {
@@ -575,7 +580,38 @@ public class SanPhamDAO {
         }
         return list;
     }
-    
+
+    public List<ThongKeSanPham> getTopSanPhamBanChay(int limit) {
+        List<ThongKeSanPham> list = new ArrayList<>();
+        String sql = "SELECT sp.TenSP, SUM(ct.SoLuong) AS TongSoLuongBan "
+                + "FROM chitiethd ct "
+                + "JOIN chitietsp ctsp ON ct.MaCTSP = ctsp.MaCTSP "
+                + "JOIN sanpham sp ON ctsp.MaSP = sp.MaSP "
+                + "JOIN hoadon hd ON ct.MaHD = hd.MaHD "
+                + "WHERE hd.MaTrangThai IN (1, 3) "
+                + // Chỉ tính đơn đã thanh toán/đã giao
+                "GROUP BY sp.MaSP, sp.TenSP "
+                + "ORDER BY TongSoLuongBan DESC "
+                + "LIMIT ?";
+        try {
+            con = new DBConnect().getConnection();
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, limit);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new ThongKeSanPham(
+                        rs.getString("TenSP"),
+                        rs.getInt("TongSoLuongBan")
+                ));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeConnections();
+        }
+        return list;
+    }
+
     public NhaCungCap getNhaCungCapByMaNCC(String maNCC) {
         String sql = "SELECT * FROM nhacc WHERE MaNCC = ?";
         try {
