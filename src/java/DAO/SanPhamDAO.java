@@ -11,6 +11,8 @@ import model.SanPhamSize;
 import util.DBConnect;
 import model.DanhMuc;
 import model.KichCo;
+import model.NhaCungCap;
+import model.ThongKeSanPham;
 
 public class SanPhamDAO {
 
@@ -21,33 +23,37 @@ public class SanPhamDAO {
     // --- HÀM ĐÓNG KẾT NỐI (DÙNG CHUNG) ---
     private void closeConnections() {
         try {
-            if (rs != null) rs.close();
-            if (ps != null) ps.close();
-            if (con != null) con.close();
+            if (rs != null) {
+                rs.close();
+            }
+            if (ps != null) {
+                ps.close();
+            }
+            if (con != null) {
+                con.close();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    // --- CÁC HÀM CỦA BẠN (ĐÃ SỬA LỖI) ---
-
+    // --- CÁC HÀM CỦA SẢN PHẨM ---
     public void addSanPham(SanPham sp) {
-        // SỬA SQL: Thêm MoTaDonVi, NgaySanXuat, LuotXem
         String sql = "INSERT INTO sanpham (TenSP, MaDM, MoTaDonVi, GiaCoBan, NgaySanXuat, LuotXem, MoTa, MaNCC) "
-                   + "VALUES (?, ?, ?, ?, NOW(), 0, ?, ?)";
+                + "VALUES (?, ?, ?, ?, NOW(), 0, ?, ?)";
         try {
             con = new DBConnect().getConnection();
             ps = con.prepareStatement(sql);
-            
+
             ps.setString(1, sp.getTenSP());
             ps.setInt(2, sp.getMaDM());
-            ps.setString(3, sp.getMoTaDonVi()); // SỬA: Thêm
+            ps.setString(3, sp.getMoTaDonVi());
             ps.setDouble(4, sp.getGiaCoBan());
             ps.setString(5, sp.getMoTa());
-            ps.setString(6, sp.getMaNCC()); 
-            
+            ps.setString(6, sp.getMaNCC());
+
             ps.executeUpdate();
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -55,21 +61,18 @@ public class SanPhamDAO {
         }
     }
 
-    // HÀM getNewSanPham (ĐÃ SỬA LỖI SQL VÀ CONSTRUCTOR)
     public List<SanPham> getNewSanPham(int topN) {
         List<SanPham> list = new ArrayList<>();
-        // SỬA SQL: Lấy đủ các cột và JOIN ảnh default
-        String sql = "SELECT sp.*, hinhsp.URLHinhAnh " +
-                     "FROM sanpham sp " +
-                     "LEFT JOIN hinhanhsanpham hinhsp ON sp.MaSP = hinhsp.MaSP AND hinhsp.IsDefault = 1 " +
-                     "ORDER BY sp.NgaySanXuat DESC LIMIT ?";
+        String sql = "SELECT sp.*, hinhsp.URLHinhAnh "
+                + "FROM sanpham sp "
+                + "LEFT JOIN hinhanhsanpham hinhsp ON sp.MaSP = hinhsp.MaSP AND hinhsp.IsDefault = 1 "
+                + "ORDER BY sp.NgaySanXuat DESC LIMIT ?";
         try {
             con = new DBConnect().getConnection();
             ps = con.prepareStatement(sql);
-            ps.setInt(1, topN); 
+            ps.setInt(1, topN);
             rs = ps.executeQuery();
             while (rs.next()) {
-                // SỬA CONSTRUCTOR: Gọi hàm 9 tham số
                 SanPham sp = new SanPham(
                         rs.getInt("MaSP"),
                         rs.getString("TenSP"),
@@ -107,30 +110,29 @@ public class SanPhamDAO {
     }
 
     public void updateSanPham(SanPham sp) {
-        // SỬA SQL: Thêm MoTaDonVi
         String sql = "UPDATE sanpham SET TenSP = ?, MaDM = ?, MoTaDonVi = ?, GiaCoBan = ?, MoTa = ?, MaNCC = ? "
-                   + "WHERE MaSP = ?";
+                + "WHERE MaSP = ?";
         try {
             con = new DBConnect().getConnection();
             ps = con.prepareStatement(sql);
-            
+
             ps.setString(1, sp.getTenSP());
             ps.setInt(2, sp.getMaDM());
-            ps.setString(3, sp.getMoTaDonVi()); // SỬA: Thêm
+            ps.setString(3, sp.getMoTaDonVi());
             ps.setDouble(4, sp.getGiaCoBan());
             ps.setString(5, sp.getMoTa());
             ps.setString(6, sp.getMaNCC());
             ps.setInt(7, sp.getMaSP()); // Tham số cho WHERE
-            
+
             ps.executeUpdate();
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             closeConnections();
         }
     }
-    
+
     public List<KichCo> getAllKichCo() {
         List<KichCo> listKC = new ArrayList<>();
         String sql = "SELECT * FROM kichco ORDER BY MaKC";
@@ -151,21 +153,18 @@ public class SanPhamDAO {
         }
         return listKC;
     }
-    
-    // HÀM getAllSanPhamSortedByDate (ĐÃ SỬA LỖI SQL VÀ CONSTRUCTOR)
+
     public List<SanPham> getAllSanPhamSortedByDate() {
         List<SanPham> listSP = new ArrayList<>();
-        // SỬA SQL: Lấy đủ cột và JOIN ảnh
-        String sql = "SELECT sp.*, hinhsp.URLHinhAnh " +
-                     "FROM sanpham sp " +
-                     "LEFT JOIN hinhanhsanpham hinhsp ON sp.MaSP = hinhsp.MaSP AND hinhsp.IsDefault = 1 " +
-                     "ORDER BY sp.NgaySanXuat DESC";
+        String sql = "SELECT sp.*, hinhsp.URLHinhAnh "
+                + "FROM sanpham sp "
+                + "LEFT JOIN hinhanhsanpham hinhsp ON sp.MaSP = hinhsp.MaSP AND hinhsp.IsDefault = 1 "
+                + "ORDER BY sp.NgaySanXuat DESC";
         try {
             con = new DBConnect().getConnection();
             ps = con.prepareStatement(sql);
             rs = ps.executeQuery();
             while (rs.next()) {
-                // SỬA CONSTRUCTOR: Gọi hàm 9 tham số
                 SanPham sp = new SanPham(
                         rs.getInt("MaSP"),
                         rs.getString("TenSP"),
@@ -177,7 +176,7 @@ public class SanPhamDAO {
                         rs.getString("MoTa"),
                         rs.getString("MaNCC")
                 );
-                sp.setHinhAnh(rs.getString("URLHinhAnh")); // Set ảnh
+                sp.setHinhAnh(rs.getString("URLHinhAnh"));
                 listSP.add(sp);
             }
         } catch (Exception e) {
@@ -187,13 +186,11 @@ public class SanPhamDAO {
         }
         return listSP;
     }
-    
-    // --- CÁC HÀM CỦA TÔI (GIỮ NGUYÊN VÌ NÓ ĐÚNG) ---
 
     public int countSanPhamByFilter(String maDM, String keyword) {
         StringBuilder sql = new StringBuilder("SELECT count(*) FROM sanpham sp");
-        List<Object> params = new ArrayList<>(); 
-        List<String> conditions = new ArrayList<>(); 
+        List<Object> params = new ArrayList<>();
+        List<String> conditions = new ArrayList<>();
 
         if (maDM != null && !maDM.isEmpty()) {
             conditions.add("sp.MaDM = ?");
@@ -202,7 +199,7 @@ public class SanPhamDAO {
 
         if (keyword != null && !keyword.trim().isEmpty()) {
             conditions.add("sp.TenSP LIKE ?");
-            params.add("%" + keyword.trim() + "%"); 
+            params.add("%" + keyword.trim() + "%");
         }
 
         if (!conditions.isEmpty()) {
@@ -216,10 +213,10 @@ public class SanPhamDAO {
             for (int i = 0; i < params.size(); i++) {
                 ps.setObject(i + 1, params.get(i));
             }
-            
+
             rs = ps.executeQuery();
             if (rs.next()) {
-                return rs.getInt(1); 
+                return rs.getInt(1);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -229,16 +226,15 @@ public class SanPhamDAO {
         return 0;
     }
 
-
     public List<SanPham> getSanPhamByFilter(String maDM, String keyword, String sort, int page, int pageSize) {
         List<SanPham> list = new ArrayList<>();
-        
+
         StringBuilder sql = new StringBuilder(
-            "SELECT sp.*, hinhsp.URLHinhAnh " +
-            "FROM sanpham sp " +
-            "LEFT JOIN hinhanhsanpham hinhsp ON sp.MaSP = hinhsp.MaSP AND hinhsp.IsDefault = 1"
+                "SELECT sp.*, hinhsp.URLHinhAnh "
+                + "FROM sanpham sp "
+                + "LEFT JOIN hinhanhsanpham hinhsp ON sp.MaSP = hinhsp.MaSP AND hinhsp.IsDefault = 1"
         );
-        
+
         List<Object> params = new ArrayList<>();
         List<String> conditions = new ArrayList<>();
 
@@ -265,7 +261,7 @@ public class SanPhamDAO {
                 sql.append(" ORDER BY sp.TenSP ASC");
             }
         } else {
-            sql.append(" ORDER BY sp.MaSP DESC"); 
+            sql.append(" ORDER BY sp.MaSP DESC");
         }
 
         sql.append(" LIMIT ? OFFSET ?");
@@ -279,22 +275,21 @@ public class SanPhamDAO {
             for (int i = 0; i < params.size(); i++) {
                 ps.setObject(i + 1, params.get(i));
             }
-            
+
             rs = ps.executeQuery();
             while (rs.next()) {
-                // SỬA: Hàm này đã dùng setter, nên nó khớp với model mới
                 SanPham sp = new SanPham();
                 sp.setMaSP(rs.getInt("MaSP"));
                 sp.setTenSP(rs.getString("TenSP"));
                 sp.setMaDM(rs.getInt("MaDM"));
-                sp.setMoTaDonVi(rs.getString("MoTaDonVi")); // SỬA: Thêm
+                sp.setMoTaDonVi(rs.getString("MoTaDonVi"));
                 sp.setGiaCoBan(rs.getDouble("GiaCoBan"));
                 sp.setNgaySanXuat(rs.getDate("NgaySanXuat"));
                 sp.setLuotXem(rs.getInt("LuotXem"));
                 sp.setMoTa(rs.getString("MoTa"));
                 sp.setMaNCC(rs.getString("MaNCC"));
-                sp.setHinhAnh(rs.getString("URLHinhAnh")); 
-                
+                sp.setHinhAnh(rs.getString("URLHinhAnh"));
+
                 list.add(sp);
             }
         } catch (Exception e) {
@@ -303,23 +298,20 @@ public class SanPhamDAO {
             closeConnections();
         }
         return list;
-    }    
-    
-    // HÀM getTopViewed (ĐÃ SỬA LỖI SQL VÀ CONSTRUCTOR)
+    }
+
     public List<SanPham> getTopViewed(int topN) {
         List<SanPham> list = new ArrayList<>();
-        // SỬA SQL: Lấy đủ cột và JOIN ảnh
-        String sql = "SELECT sp.*, hinhsp.URLHinhAnh " +
-                     "FROM sanpham sp " +
-                     "LEFT JOIN hinhanhsanpham hinhsp ON sp.MaSP = hinhsp.MaSP AND hinhsp.IsDefault = 1 " +
-                     "ORDER BY sp.LuotXem DESC LIMIT ?";
+        String sql = "SELECT sp.*, hinhsp.URLHinhAnh "
+                + "FROM sanpham sp "
+                + "LEFT JOIN hinhanhsanpham hinhsp ON sp.MaSP = hinhsp.MaSP AND hinhsp.IsDefault = 1 "
+                + "ORDER BY sp.LuotXem DESC LIMIT ?";
         try {
             con = new DBConnect().getConnection();
             ps = con.prepareStatement(sql);
-            ps.setInt(1, topN); 
+            ps.setInt(1, topN);
             rs = ps.executeQuery();
             while (rs.next()) {
-                // SỬA CONSTRUCTOR: Gọi hàm 9 tham số
                 SanPham sp = new SanPham(
                         rs.getInt("MaSP"),
                         rs.getString("TenSP"),
@@ -331,7 +323,7 @@ public class SanPhamDAO {
                         rs.getString("MoTa"),
                         rs.getString("MaNCC")
                 );
-                sp.setHinhAnh(rs.getString("URLHinhAnh")); // Set ảnh
+                sp.setHinhAnh(rs.getString("URLHinhAnh"));
                 list.add(sp);
             }
         } catch (Exception e) {
@@ -342,33 +334,12 @@ public class SanPhamDAO {
         return list;
     }
 
-public List<DanhMuc> getAllDanhMuc() {
-        List<DanhMuc> listDM = new ArrayList<>();
-        String sql = "SELECT MaDM, TenDM, Hinh FROM danhmuc"; 
-        try {
-            con = new DBConnect().getConnection(); 
-            ps = con.prepareStatement(sql);
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                listDM.add(new DanhMuc(
-                        rs.getInt("MaDM"),
-                        rs.getString("TenDM"),
-                        rs.getString("Hinh") 
-                ));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            closeConnections();
-        }
-        return listDM;
-    }    
     public SanPham getSanPhamByMaSP(int maSP) {
-        String sql = "SELECT sp.*, dm.TenDM, ncc.TenCty " +
-                     "FROM sanpham sp " +
-                     "JOIN danhmuc dm ON sp.MaDM = dm.MaDM " +
-                     "JOIN nhacc ncc ON sp.MaNCC = ncc.MaNCC " +
-                     "WHERE sp.MaSP = ?";
+        String sql = "SELECT sp.*, dm.TenDM, ncc.TenCty "
+                + "FROM sanpham sp "
+                + "JOIN danhmuc dm ON sp.MaDM = dm.MaDM "
+                + "JOIN nhacc ncc ON sp.MaNCC = ncc.MaNCC "
+                + "WHERE sp.MaSP = ?";
         try {
             con = new DBConnect().getConnection();
             ps = con.prepareStatement(sql);
@@ -386,8 +357,7 @@ public List<DanhMuc> getAllDanhMuc() {
                         rs.getString("MoTa"),
                         rs.getString("MaNCC")
                 );
-                
-                // Set các trường JOIN
+
                 sp.setTenDanhMuc(rs.getString("TenDM"));
                 sp.setTenNhaCungCap(rs.getString("TenCty"));
                 return sp;
@@ -400,13 +370,12 @@ public List<DanhMuc> getAllDanhMuc() {
         return null;
     }
 
-    // Hàm lấy các size của 1 sản phẩm (Không đổi)
     public List<SanPhamSize> getChiTietSPByMaSP(int maSP) {
         List<SanPhamSize> listSize = new ArrayList<>();
         String sql = "SELECT ct.MaCTSP, ct.MaSP, kc.TenKichCo, ct.SoLuongTon, ct.GiaBan "
-                   + "FROM chitietsp ct "
-                   + "JOIN kichco kc ON ct.MaKC = kc.MaKC "
-                   + "WHERE ct.MaSP = ?";
+                + "FROM chitietsp ct "
+                + "JOIN kichco kc ON ct.MaKC = kc.MaKC "
+                + "WHERE ct.MaSP = ?";
         try {
             con = new DBConnect().getConnection();
             ps = con.prepareStatement(sql);
@@ -428,7 +397,7 @@ public List<DanhMuc> getAllDanhMuc() {
         }
         return listSize;
     }
-    
+
     public List<HinhAnhSanPham> getListHinhAnhByMaSP(int maSP) {
         List<HinhAnhSanPham> listAnh = new ArrayList<>();
         String sql = "SELECT * FROM hinhanhsanpham WHERE MaSP = ?";
@@ -452,16 +421,15 @@ public List<DanhMuc> getAllDanhMuc() {
         }
         return listAnh;
     }
-    
+
     public List<SanPham> getSanPhamLienQuan(int maDM, int maSP_hienTai) {
         List<SanPham> listSP = new ArrayList<>();
-        // SỬA SQL: Lấy đủ cột và JOIN ảnh
-        String sql = "SELECT sp.*, hinhsp.URLHinhAnh " +
-                     "FROM sanpham sp " +
-                     "LEFT JOIN hinhanhsanpham hinhsp ON sp.MaSP = hinhsp.MaSP AND hinhsp.IsDefault = 1 "
-                   + "WHERE sp.MaDM = ? AND sp.MaSP != ? "
-                   + "ORDER BY NgaySanXuat DESC " 
-                   + "LIMIT 4";
+        String sql = "SELECT sp.*, hinhsp.URLHinhAnh "
+                + "FROM sanpham sp "
+                + "LEFT JOIN hinhanhsanpham hinhsp ON sp.MaSP = hinhsp.MaSP AND hinhsp.IsDefault = 1 "
+                + "WHERE sp.MaDM = ? AND sp.MaSP != ? "
+                + "ORDER BY NgaySanXuat DESC "
+                + "LIMIT 4";
         try {
             con = new DBConnect().getConnection();
             ps = con.prepareStatement(sql);
@@ -480,7 +448,7 @@ public List<DanhMuc> getAllDanhMuc() {
                         rs.getString("MoTa"),
                         rs.getString("MaNCC")
                 );
-                sp.setHinhAnh(rs.getString("URLHinhAnh")); 
+                sp.setHinhAnh(rs.getString("URLHinhAnh"));
                 listSP.add(sp);
             }
         } catch (Exception e) {
@@ -489,5 +457,295 @@ public List<DanhMuc> getAllDanhMuc() {
             closeConnections();
         }
         return listSP;
+    }
+
+    // --- CÁC HÀM CRUD CHO DANH MỤC (ĐÃ SỬA LỖI) ---
+    public List<DanhMuc> getAllDanhMuc() {
+        List<DanhMuc> listDM = new ArrayList<>();
+        String sql = "SELECT * FROM danhmuc";
+        try {
+            con = new DBConnect().getConnection();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                // SỬA: Gọi đúng constructor 4 tham số của bạn
+                listDM.add(new DanhMuc(
+                        rs.getInt("MaDM"),
+                        rs.getString("TenDM"),
+                        rs.getString("MoTa"), // CSDL có MoTa
+                        rs.getString("Hinh") // CSDL có Hinh
+                ));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeConnections();
+        }
+        return listDM;
+    }
+
+    public DanhMuc getDanhMucByMaDM(int maDM) {
+        String sql = "SELECT * FROM danhmuc WHERE MaDM = ?";
+        try {
+            con = new DBConnect().getConnection();
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, maDM);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                // SỬA: Gọi đúng constructor 4 tham số
+                return new DanhMuc(
+                        rs.getInt("MaDM"),
+                        rs.getString("TenDM"),
+                        rs.getString("MoTa"),
+                        rs.getString("Hinh")
+                );
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeConnections();
+        }
+        return null;
+    }
+    public List<NhaCungCap> getAllNhaCungCap() {
+        List<NhaCungCap> list = new ArrayList<>();
+        String sql = "SELECT * FROM nhacc";
+        try {
+            con = new DBConnect().getConnection();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new NhaCungCap(
+                        rs.getString("MaNCC"),
+                        rs.getString("TenCty"),
+                        rs.getString("TenLH"),
+                        rs.getString("Email"),
+                        rs.getString("Phone"),
+                        rs.getString("DiaChi"),
+                        rs.getString("MoTa")
+                ));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeConnections();
+        }
+        return list;
+    }
+
+    public List<ThongKeSanPham> getTopSanPhamBanChay(int limit) {
+        List<ThongKeSanPham> list = new ArrayList<>();
+        String sql = "SELECT sp.TenSP, SUM(ct.SoLuong) AS TongSoLuongBan "
+                + "FROM chitiethd ct "
+                + "JOIN chitietsp ctsp ON ct.MaCTSP = ctsp.MaCTSP "
+                + "JOIN sanpham sp ON ctsp.MaSP = sp.MaSP "
+                + "JOIN hoadon hd ON ct.MaHD = hd.MaHD "
+                + "WHERE hd.MaTrangThai IN (1, 3) "
+                + // Chỉ tính đơn đã thanh toán/đã giao
+                "GROUP BY sp.MaSP, sp.TenSP "
+                + "ORDER BY TongSoLuongBan DESC "
+                + "LIMIT ?";
+        try {
+            con = new DBConnect().getConnection();
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, limit);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new ThongKeSanPham(
+                        rs.getString("TenSP"),
+                        rs.getInt("TongSoLuongBan")
+                ));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeConnections();
+        }
+        return list;
+    }
+
+    public NhaCungCap getNhaCungCapByMaNCC(String maNCC) {
+        String sql = "SELECT * FROM nhacc WHERE MaNCC = ?";
+        try {
+            con = new DBConnect().getConnection();
+            ps = con.prepareStatement(sql);
+            ps.setString(1, maNCC);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                return new NhaCungCap(
+                        rs.getString("MaNCC"),
+                        rs.getString("TenCty"),
+                        rs.getString("TenLH"),
+                        rs.getString("Email"),
+                        rs.getString("Phone"),
+                        rs.getString("DiaChi"),
+                        rs.getString("MoTa")
+                );
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeConnections();
+        }
+        return null;
+    }
+
+    public void addNhaCungCap(NhaCungCap ncc) {
+        String sql = "INSERT INTO nhacc (MaNCC, TenCty, TenLH, Email, Phone, DiaChi, MoTa) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try {
+            con = new DBConnect().getConnection();
+            ps = con.prepareStatement(sql);
+            ps.setString(1, ncc.getMaNCC());
+            ps.setString(2, ncc.getTenCty());
+            ps.setString(3, ncc.getTenLH());
+            ps.setString(4, ncc.getEmail());
+            ps.setString(5, ncc.getPhone());
+            ps.setString(6, ncc.getDiaChi());
+            ps.setString(7, ncc.getMoTa());
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeConnections();
+        }
+    }
+
+    public void updateNhaCungCap(NhaCungCap ncc) {
+        String sql = "UPDATE nhacc SET TenCty = ?, TenLH = ?, Email = ?, Phone = ?, DiaChi = ?, MoTa = ? WHERE MaNCC = ?";
+        try {
+            con = new DBConnect().getConnection();
+            ps = con.prepareStatement(sql);
+            ps.setString(1, ncc.getTenCty());
+            ps.setString(2, ncc.getTenLH());
+            ps.setString(3, ncc.getEmail());
+            ps.setString(4, ncc.getPhone());
+            ps.setString(5, ncc.getDiaChi());
+            ps.setString(6, ncc.getMoTa());
+            ps.setString(7, ncc.getMaNCC()); // WHERE
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeConnections();
+        }
+    }
+// BÊN TRONG CLASS DAO/SanPhamDAO.java
+
+    /**
+     * MỚI: Đếm tổng số lượng chi tiết sản phẩm (cho phân trang)
+     */
+    public int getTongSoChiTietSP() {
+        String sql = "SELECT COUNT(*) FROM chitietsp";
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            con = new DBConnect().getConnection();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1); // Trả về tổng số
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // Tự gọi hàm closeConnections của bạn
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+                if (con != null) con.close();
+            } catch (Exception e) {}
+        }
+        return 0;
+    }
+    /**
+     * MỚI: Lấy danh sách tồn kho CÓ PHÂN TRANG (thay cho hàm cũ)
+     */
+    public List<SanPhamSize> getDanhSachTonKhoTheoTrang(int pageNumber, int pageSize) {
+        List<SanPhamSize> list = new ArrayList<>();
+        
+        // Tính toán OFFSET (vị trí bắt đầu lấy)
+        int offset = (pageNumber - 1) * pageSize;
+        
+        String sql = "SELECT ct.MaCTSP, sp.TenSP, kc.TenKichCo, ct.SoLuongTon " +
+                     "FROM chitietsp ct " +
+                     "JOIN sanpham sp ON ct.MaSP = sp.MaSP " +
+                     "JOIN kichco kc ON ct.MaKC = kc.MaKC " +
+                     "ORDER BY sp.TenSP, ct.MaCTSP " +
+                     "LIMIT ? OFFSET ?"; // Thêm LIMIT và OFFSET
+        
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            con = new DBConnect().getConnection();
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, pageSize); // LIMIT
+            ps.setInt(2, offset);   // OFFSET
+            
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                SanPhamSize sps = new SanPhamSize();
+                sps.setMaCTSP(rs.getInt("MaCTSP"));
+                sps.setTenSP(rs.getString("TenSP")); // Đã sửa model ở lần trước
+                sps.setTenKichCo(rs.getString("TenKichCo"));
+                sps.setSoLuongTon(rs.getInt("SoLuongTon"));
+                list.add(sps);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // Tự gọi hàm closeConnections của bạn
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+                if (con != null) con.close();
+            } catch (Exception e) {}
+        }
+        return list;
+    }
+    public void deleteNhaCungCap(String maNCC) {
+        String sql = "DELETE FROM nhacc WHERE MaNCC = ?";
+        try {
+            con = new DBConnect().getConnection();
+            ps = con.prepareStatement(sql);
+            ps.setString(1, maNCC);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeConnections();
+        }
+    }
+    public boolean updateSoLuongTon(int maCTSP, int soLuongMoi) {
+        // Câu lệnh SQL update trực tiếp vào bảng chitietsp
+        String sql = "UPDATE chitietsp SET SoLuongTon = ? WHERE MaCTSP = ?";
+        
+        Connection con = null;
+        PreparedStatement ps = null;
+
+        try {
+            con = new DBConnect().getConnection();
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, soLuongMoi);
+            ps.setInt(2, maCTSP);
+            
+            // Trả về true nếu có ít nhất 1 dòng bị ảnh hưởng (tức là update thành công)
+            return ps.executeUpdate() > 0; 
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            // Tự gọi hàm closeConnections của bạn (hoặc đóng thủ công)
+            try {
+                if (ps != null) ps.close();
+                if (con != null) con.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

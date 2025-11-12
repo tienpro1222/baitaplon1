@@ -13,6 +13,14 @@ public class NhanVien {
     public NhanVien() {
     }
 
+    public NhanVien(String maNV, String hoTen, String email, String password, int role) {
+        this.maNV = maNV;
+        this.hoTen = hoTen;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
     public NhanVien(String maNV, String hoTen, String email, String dienThoai, String diaChi, String username, String password, int role) {
         this.maNV = maNV;
         this.hoTen = hoTen;

@@ -16,7 +16,7 @@ public class DangNhapServlet extends HttpServlet {
             throws ServletException, IOException {
         
         request.setCharacterEncoding("UTF-8");
-        String userOrEmail = request.getParameter("tendn"); // Nhận username hoặc email
+        String userOrEmail = request.getParameter("tendn");
         String mk = request.getParameter("matkhau");
 
         TaiKhoanDAO dao = new TaiKhoanDAO();
@@ -24,7 +24,6 @@ public class DangNhapServlet extends HttpServlet {
         HttpSession session = request.getSession();
 
         // Bước 1: Kiểm tra Khách hàng (role = 0)
-        // Giả sử TaiKhoanDAO đã được sửa để dùng Email và MatKhau
         TaiKhoan kh = dao.checkKhachHangLogin(userOrEmail, mk); 
 
         if (kh != null) {
@@ -42,7 +41,6 @@ public class DangNhapServlet extends HttpServlet {
         } else {
             // Bước 2: Kiểm tra Admin (role = 2)
             
-            // SỬA LỖI: Tên phương thức là 'checkNhanVienLogin', không phải 'check'
             NhanVien nv = dao.checkNhanVienLogin(userOrEmail, mk); 
 
             // Giả sử TaiKhoanDAO và model NhanVien đã được sửa để dùng VaiTro (Role)
@@ -51,7 +49,7 @@ public class DangNhapServlet extends HttpServlet {
                 session.setAttribute("user", nv);
                 session.setAttribute("role", nv.getRole()); 
 
-                response.sendRedirect(request.getContextPath() + "/admin.jsp");
+                response.sendRedirect(request.getContextPath() + "/admin/admin.jsp");
 
             } else {
                 // Đăng nhập thất bại

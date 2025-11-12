@@ -44,7 +44,7 @@ public class ThemGioHangServlet extends HttpServlet {
             
             // Cập nhật lại cartCount trong session
             int cartCount = ghDAO.getSoLuongTrongGio(maKH);
-            session.setAttribute("cartCount", cartCount);
+session.setAttribute("cartCount", cartCount);
 
             // Quay về trang chi tiết sản phẩm (hoặc trang giỏ hàng)
             response.sendRedirect("GioHangServlet"); // Chuyển thẳng về giỏ hàng

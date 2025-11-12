@@ -5,9 +5,23 @@ public class DanhMuc {
     private int maDM;
     private String tenDM;
     private String hinhAnh;
-    
+    private String moTa;
 
     public DanhMuc() {
+    }
+    public DanhMuc(int maDM, String tenDM, String moTa, String hinhAnh) {
+        this.maDM = maDM;
+        this.tenDM = tenDM;
+        this.moTa = moTa;
+        this.hinhAnh = hinhAnh;
+    }
+
+    public String getMoTa() {
+        return moTa;
+    }
+
+    public void setMoTa(String moTa) {
+        this.moTa = moTa;
     }
 
     public DanhMuc(int maDM, String tenDM) {

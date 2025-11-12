@@ -11,6 +11,7 @@ import model.ChiTietHD;
 import model.GioHang;
 import model.HoaDon;
 import model.ThongKeDoanhThu;
+import model.TrangThaiDonHang;
 import util.DBConnect;
 
 public class HoaDonDAO {
@@ -57,7 +58,7 @@ public class HoaDonDAO {
                         rs.getString("TenSP"),
                         rs.getString("TenKichCo")
                 );
-                // ct.setHinhAnh(rs.getString("URLHinhAnh")); // Thêm dòng này nếu model ChiTietHD có HinhAnh
+                // ct.setHinhAnh(rs.getString("URLHinhAnh")); 
                 listCT.add(ct);
             }
         } catch (Exception e) {
@@ -67,7 +68,96 @@ public class HoaDonDAO {
         }
         return listCT;
     }
+public List<TrangThaiDonHang> getAllTrangThai() {
+        List<TrangThaiDonHang> list = new ArrayList<>();
+        String sql = "SELECT * FROM trangthaidonhang";
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            con = new DBConnect().getConnection();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while(rs.next()) {
+                list.add(new TrangThaiDonHang(
+                        rs.getInt("MaTrangThai"), 
+                        rs.getString("TenTrangThai"), 
+                        rs.getString("MoTa")
+                ));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeConnections(con, ps, rs);
+        }
+        return list;
+    }
+public List<HoaDon> getAllHoaDon() { 
+        List<HoaDon> list = new ArrayList<>();
+        
+        String sql = "SELECT hd.*, tt.TenTrangThai, " +
+                     " (SELECT SUM(ct.DonGia * ct.SoLuong) + hd.PhiVanChuyen FROM chitiethd ct WHERE ct.MaHD = hd.MaHD) AS TongTienHoaDon " +
+                     " FROM hoadon hd " +
+                     " JOIN trangthaidonhang tt ON hd.MaTrangThai = tt.MaTrangThai " +
+                     " ORDER BY hd.NgayDat DESC"; // Sắp xếp mới nhất lên đầu
+        
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
 
+        try {
+            con = new DBConnect().getConnection();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                HoaDon hd = new HoaDon();
+                hd.setMaHD(rs.getInt("MaHD"));
+                hd.setMaKH(rs.getString("MaKH")); 
+                hd.setNgayDatHang(rs.getDate("NgayDat")); 
+                hd.setTongTien(rs.getDouble("TongTienHoaDon")); 
+                hd.setDiaChiGiaoHang(rs.getString("DiaChiGiaoHang"));
+                hd.setHoTenNguoiNhan(rs.getString("TenNguoiNhan"));
+                hd.setGhiChu(rs.getString("GhiChu"));
+                hd.setMaTrangThai(rs.getInt("MaTrangThai"));
+                hd.setMaNV(rs.getString("MaNV")); 
+                
+                // Set trường mới mà chúng ta đã JOIN
+                hd.setTenTrangThai(rs.getString("TenTrangThai"));
+
+                list.add(hd);
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); 
+        } finally {
+            closeConnections(con, ps, rs); 
+        }
+        return list;
+    }
+    
+    /**
+     * MỚI: Cập nhật trạng thái của một đơn hàng
+     */
+    public boolean updateTrangThaiDonHang(int maHD, int maTrangThaiMoi, String maNV) {
+        String sql = "UPDATE hoadon SET MaTrangThai = ?, MaNV = ? WHERE MaHD = ?";
+        Connection con = null;
+        PreparedStatement ps = null;
+        try {
+            con = new DBConnect().getConnection();
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, maTrangThaiMoi);
+            ps.setString(2, maNV); // Ghi lại Admin nào đã cập nhật
+            ps.setInt(3, maHD);
+            
+            return ps.executeUpdate() > 0; // Trả về true nếu thành công
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            closeConnections(con, ps, null);
+        }
+    }
 public int createHoaDon(HoaDon hd, List<GioHang> cartItems) { 
     Connection con = null;
     PreparedStatement ps_hd = null;
@@ -171,7 +261,7 @@ public int createHoaDon(HoaDon hd, List<GioHang> cartItems) {
                      "JOIN " +
                      "    chitiethd ct ON hd.MaHD = ct.MaHD " +
                      "WHERE " +
-                     "    hd.MaTrangThai = 3  " +
+                     "    hd.MaTrangThai IN(1,3)  " +
                      "    AND hd.NgayDat >= CURDATE() - INTERVAL 7 DAY " +
                      "GROUP BY " +
                      "    DATE(hd.NgayDat) " +
@@ -256,4 +346,64 @@ public int createHoaDon(HoaDon hd, List<GioHang> cartItems) {
         }
         return list;
     }
+    /**
+     * MỚI: Lấy tổng doanh thu (chỉ tính các đơn đã hoàn thành)
+     */
+    public double getTongDoanhThu() {
+        // Câu SQL này SUM tiền từ bảng chi tiết,
+        // và chỉ tính các hóa đơn có trạng thái 1 hoặc 3 (giống logic thống kê 7 ngày)
+        String sql = "SELECT SUM(ct.DonGia * ct.SoLuong) " +
+                     "FROM chitiethd ct " +
+                     "JOIN hoadon hd ON ct.MaHD = hd.MaHD " +
+                     "WHERE hd.MaTrangThai IN (1, 3)"; 
+        
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        double tongDoanhThu = 0.0; // Mặc định là 0
+
+        try {
+            con = new DBConnect().getConnection();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            // Truy vấn SUM luôn trả về 1 hàng, kể cả là 0 hoặc NULL
+            if (rs.next()) {
+                tongDoanhThu = rs.getDouble(1); // Lấy kết quả từ cột đầu tiên
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeConnections(con, ps, rs); // Dùng lại hàm helper
+        }
+        return tongDoanhThu;
+    }
+
+    /**
+     * MỚI: Lấy tổng số đơn hàng (tất cả trạng thái)
+     */
+    public int getTongSoDonHang() {
+        String sql = "SELECT COUNT(*) FROM hoadon"; // Đếm tất cả hóa đơn
+        
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        int tongSoDonHang = 0; // Mặc định là 0
+
+        try {
+            con = new DBConnect().getConnection();
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                tongSoDonHang = rs.getInt(1); // Lấy kết quả từ cột đầu tiên
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeConnections(con, ps, rs); // Dùng lại hàm helper
+        }
+        return tongSoDonHang;
+    }
+    
 }
