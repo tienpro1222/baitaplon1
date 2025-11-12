@@ -53,17 +53,21 @@ public class DangKyServlet extends HttpServlet {
             
             if (a == null) {
                 // Được phép đăng ký
-                // SỬA: Gọi signup() với các biến đã sửa
-                dao.signup(user, pass, email, ten, sdt, diaChi);
-                response.sendRedirect("login.jsp"); // Chuyển về trang đăng nhập
+                // SỬA: Thay đổi DAO.signup để kiểm tra kết quả trả về (boolean)
+                if (dao.signup(user, pass, email, ten, sdt, diaChi)) {
+                    // Đăng ký thành công
+                    response.sendRedirect("login.jsp"); // Chuyển về trang đăng nhập
+                } else {
+                    // Lỗi xảy ra trong quá trình thêm vào CSDL (Do CSDL hoặc lỗi hệ thống)
+                    request.setAttribute("error", "Đăng ký thất bại. Vui lòng thử lại hoặc liên hệ hỗ trợ.");
+                    request.getRequestDispatcher("dangky.jsp").forward(request, response);
+                }
             } else {
                 // Tài khoản đã tồn tại
                 request.setAttribute("error", "Email này đã được đăng ký!");
                 request.getRequestDispatcher("dangky.jsp").forward(request, response);
             }
-        }
-    }
-
+        }}
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

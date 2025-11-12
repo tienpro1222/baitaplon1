@@ -101,26 +101,37 @@ public class TaiKhoanDAO {
         return null;
     }
 
-    public void signup(String user, String pass, String email, String ten, String sdt, String diaChi) {
-        String sql = "INSERT INTO khachhang (HoTen, DiaChi, DienThoai, Email, MatKhau, VaiTro) "
-                   + "VALUES (?, ?, ?, ?, ?, 0)"; 
+public boolean signup(String user, String pass, String email, String ten, String sdt, String diaChi) {
+        // BƯỚC 1: SINH MÃ KHÁCH HÀNG (MaKH)
+        String maKH = generateMaKH();
+        
+        // SỬA SQL: Thêm MaKH vào danh sách cột cần INSERT và thêm 1 placeholder '?'
+        String sql = "INSERT INTO khachhang (MaKH, HoTen, DiaChi, DienThoai, Email, MatKhau, VaiTro, HieuLuc) "
+                   + "VALUES (?, ?, ?, ?, ?, ?, 0, ?)"; 
         try {
             conn = new DBConnect().getConnection();
             ps = conn.prepareStatement(sql);
-            ps.setString(1, ten);
-            ps.setString(2, diaChi);
-            ps.setString(3, sdt);
-            ps.setString(4, email);
-            ps.setString(5, pass); 
-            ps.executeUpdate();
+            
+            // CÁC THAM SỐ SQL (Đúng thứ tự trong câu lệnh INSERT)
+            ps.setString(1, maKH);    
+            ps.setString(2, ten);      
+            ps.setString(3, diaChi);  
+            ps.setString(4, sdt);     
+            ps.setString(5, email);   
+            ps.setString(6, pass);    
+            // ps.setInt(7, 0);          
+            ps.setBoolean(7, true);     
+            
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0; 
         } catch (Exception e) {
-            e.printStackTrace();
+            // Lỗi SQL thực sự sẽ được in ra console server (ví dụ: duplicate key)
+            e.printStackTrace(); 
+            return false; 
         } finally {
             closeConnections();
         }
     }
-
-
     // Hàm đóng kết nối
     private void closeConnections() {
         try {
@@ -422,5 +433,11 @@ public boolean updateKhachHang(TaiKhoan kh) {
         } finally {
             closeConnections();
         }
+    }
+    private String generateMaKH() {
+        // Tạo chuỗi MaKH có tiền tố "KH" + 15 chữ số cuối của System.currentTimeMillis()
+        // Đảm bảo MaKH duy nhất và nằm trong giới hạn VARCHAR(20)
+        String timestamp = String.valueOf(System.currentTimeMillis());
+        return "KH" + timestamp; 
     }
 }

@@ -44,9 +44,9 @@
 
             <a href="<c:url value='/GioHangServlet'/>" class="btn btn-outline-dark rounded-pill position-relative">
                 <i class="fa fa-shopping-cart"></i>
-                <c:if test="${not empty sessionScope.cartSize && sessionScope.cartSize > 0}">
+                <c:if test="${not empty sessionScope.cartCount && sessionScope.cartCount > 0}">
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        ${sessionScope.cartSize}
+                        ${sessionScope.cartCount}
                     </span>
                 </c:if>
             </a>
