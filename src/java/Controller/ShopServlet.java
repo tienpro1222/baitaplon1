@@ -15,7 +15,7 @@ import model.SanPham;
 public class ShopServlet extends HttpServlet {
 
     // SỬA: Đặt PAGE_SIZE ở đây
-    private static final int PAGE_SIZE = 9;
+    private static final int PAGE_SIZE = 6;
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
