@@ -43,6 +43,18 @@
             <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/web/img/boots_chukka.jpg</file>
             <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/web/img/blazer_lua_navy.jpg</file>
             <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/DAO/GioHangDAO.java</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/web/css/bootstrap.min.css</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/DAO/HoaDonDAO.java</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/model/HoaDon.java</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/model/GioHang.java</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/Controller/XoaGioHangServlet.java</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/Controller/PlaceOrderServlet.java</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/Controller/CapNhatGioHangServlet.java</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/Controller/OrderDetailServlet.java</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/model/NhanVien.java</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/model/KichCo.java</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/model/SanPham.java</file>
+            <file>file:/C:/Users/toite/Downloads/Web-c--s/Web-c--s/src/java/model/HinhAnhSanPham.java</file>
         </group>
     </open-files>
 </project-private>

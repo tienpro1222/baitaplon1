@@ -3,7 +3,8 @@ package model;
 import java.sql.Date; 
 
 public class HoaDon {
-
+    private String tenTrangThai;
+    
     private int maHD;
     private String maKH; 
     private Date ngayDatHang;       
@@ -68,6 +69,14 @@ public class HoaDon {
 
     public void setTongTien(double tongTien) {
         this.tongTien = tongTien;
+    }
+
+    public String getTenTrangThai() {
+        return tenTrangThai;
+    }
+
+    public void setTenTrangThai(String tenTrangThai) {
+        this.tenTrangThai = tenTrangThai;
     }
 
     public String getHoTenNguoiNhan() {
