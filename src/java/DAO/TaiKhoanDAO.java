@@ -120,33 +120,6 @@ public class TaiKhoanDAO {
         }
     }
 
-    // SỬA: Hàm lấy tài khoản bằng String maKH
-    public TaiKhoan getTaiKhoanByMaKH(String maKH) { // SỬA: Nhận String
-        String sql = "SELECT * FROM khachhang WHERE MaKH = ?";
-        try {
-            conn = new DBConnect().getConnection();
-            ps = conn.prepareStatement(sql);
-            ps.setString(1, maKH); // SỬA: setString
-            rs = ps.executeQuery();
-            if (rs.next()) {
-                return new TaiKhoan(
-                        rs.getString("MaKH"), // SỬA
-                        rs.getString("HoTen"),
-                        rs.getString("DiaChi"),
-                        rs.getString("DienThoai"),
-                        rs.getString("Email"),
-                        rs.getString("Email"),     
-                        rs.getString("MatKhau"),   
-                        rs.getInt("VaiTro")      
-                );
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            closeConnections();
-        }
-        return null;
-    }
 
     // Hàm đóng kết nối
     private void closeConnections() {
@@ -258,7 +231,69 @@ public class TaiKhoanDAO {
         }
         return 0;
     }
+public TaiKhoan getTaiKhoanByMaKH(String maKH) {
+    String sql = "SELECT * FROM taikhoan WHERE MaKH = ?";
+    Connection con = null;
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+    
+    try {
+        con = new DBConnect().getConnection();
+        ps = con.prepareStatement(sql);
+        ps.setString(1, maKH);
+        rs = ps.executeQuery();
+        
+        if (rs.next()) {
+            TaiKhoan tk = new TaiKhoan();
+            tk.setMaKH(rs.getString("MaKH"));
+            tk.setHoTen(rs.getString("HoTen"));
+            tk.setEmail(rs.getString("Email"));
+            tk.setDienThoai(rs.getString("SDT"));
+            tk.setDiaChi(rs.getString("DiaChi"));
+            tk.setRole(rs.getInt("Role"));
+            tk.setHieuLuc(rs.getBoolean("HieuLuc"));
+            // Không lấy mật khẩu để bảo mật
+            return tk;
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        // Tự thêm hàm closeConnections của bạn
+        try { if (rs != null) rs.close(); } catch (Exception e) {}
+        try { if (ps != null) ps.close(); } catch (Exception e) {}
+        try { if (con != null) con.close(); } catch (Exception e) {}
+    }
+    return null;
+}
 
+/**
+ * MỚI: Cập nhật thông tin tài khoản (dùng cho trang Sửa)
+ */
+public boolean updateTaiKhoan(TaiKhoan kh) {
+    // Không cập nhật mật khẩu, MaKH, Role ở đây
+    String sql = "UPDATE taikhoan SET HoTen = ?, Email = ?, SDT = ?, DiaChi = ? WHERE MaKH = ?";
+    Connection con = null;
+    PreparedStatement ps = null;
+    
+    try {
+        con = new DBConnect().getConnection();
+        ps = con.prepareStatement(sql);
+        ps.setString(1, kh.getHoTen());
+        ps.setString(2, kh.getEmail());
+        ps.setString(3, kh.getDienThoai());
+        ps.setString(4, kh.getDiaChi());
+        ps.setString(5, kh.getMaKH());
+        
+        return ps.executeUpdate() > 0;
+    } catch (Exception e) {
+        e.printStackTrace();
+        return false;
+    } finally {
+        // Tự thêm hàm closeConnections của bạn
+        try { if (ps != null) ps.close(); } catch (Exception e) {}
+        try { if (con != null) con.close(); } catch (Exception e) {}
+    }
+}
     /**
      * MỚI: Lấy tổng số đơn hàng đã bán (cho Stat Card)
      */

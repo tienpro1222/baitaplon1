@@ -10,7 +10,7 @@ public class TaiKhoan {
     private String username;
     private String password;
     private int role;
-    private boolean hieuLuc; // Trường này đã có
+    private boolean hieuLuc; 
 
     public TaiKhoan() {
     }
