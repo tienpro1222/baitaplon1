@@ -42,7 +42,7 @@ public class QuanLyDonHangServlet extends HttpServlet {
         request.setAttribute("listTrangThai", listTrangThai);
         
         // 4. Forward
-        request.getRequestDispatcher("admin_orders.jsp").forward(request, response);
+        request.getRequestDispatcher("admin/admin_orders.jsp").forward(request, response);
     }
 
     @Override

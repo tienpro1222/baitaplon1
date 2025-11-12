@@ -2,19 +2,20 @@ package model;
 
 public class TaiKhoan {
 
-    private String maKH; 
+    private String maKH;
     private String hoTen;
     private String diaChi;
     private String dienThoai;
     private String email;
     private String username;
     private String password;
-    private int role; 
+    private int role;
+    private boolean hieuLuc; // Trường này đã có
 
     public TaiKhoan() {
     }
 
-    // SỬA: Constructor khớp CSDL (String maKH)
+    // Constructor 8 tham số (cũ của bạn)
     public TaiKhoan(String maKH, String hoTen, String diaChi, String dienThoai, String email, String username, String password, int role) {
         this.maKH = maKH;
         this.hoTen = hoTen;
@@ -24,15 +25,28 @@ public class TaiKhoan {
         this.username = username;
         this.password = password;
         this.role = role;
+        this.hieuLuc = true; 
+    }
+    
+    public TaiKhoan(String maKH, String hoTen, String diaChi, String dienThoai, String email, String username, String password, int role, boolean hieuLuc) {
+        this.maKH = maKH;
+        this.hoTen = hoTen;
+        this.diaChi = diaChi;
+        this.dienThoai = dienThoai;
+        this.email = email;
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.hieuLuc = hieuLuc; 
     }
 
-    // Getters and Setters
+    // --- Getters and Setters (Giữ nguyên) ---
     
-    public String getMaKH() { // SỬA: Trả về String
+    public String getMaKH() {
         return maKH;
     }
 
-    public void setMaKH(String maKH) { // SỬA: Nhận String
+    public void setMaKH(String maKH) {
         this.maKH = maKH;
     }
 
@@ -90,5 +104,13 @@ public class TaiKhoan {
 
     public void setRole(int role) {
         this.role = role;
+    }
+
+    public boolean isHieuLuc() {
+        return hieuLuc;
+    }
+
+    public void setHieuLuc(boolean hieuLuc) {
+        this.hieuLuc = hieuLuc;
     }
 }
